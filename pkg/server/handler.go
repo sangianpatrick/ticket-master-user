@@ -30,3 +30,14 @@ func NotFoundHandler(logger *logrus.Logger) http.Handler {
 		response.JSON(w, http.StatusOK, resp)
 	})
 }
+
+func IndexHandler(logger *logrus.Logger) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		resp := response.WebAPIEnvelope{
+			Success: true,
+			Status:  "OK",
+			Message: "application is running properly",
+		}
+		response.JSON(w, http.StatusOK, resp)
+	})
+}

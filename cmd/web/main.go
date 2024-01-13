@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,6 +21,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.NotFoundHandler = server.NotFoundHandler(logger)
+	router.HandleFunc("/ticketmaster/user", server.IndexHandler(logger)).Methods(http.MethodGet)
 
 	httpServer := server.NewServer(logger, router, cfg.App.Name, cfg.App.Port)
 	httpServer.Start()
