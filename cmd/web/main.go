@@ -17,7 +17,7 @@ func main() {
 
 	logger := logrus.New()
 	logger.SetReportCaller(true)
-	logger.SetFormatter(&logrus.JSONFormatter{})
+	logger.SetFormatter(cfg.Logrus.Formatter)
 
 	router := mux.NewRouter()
 	router.NotFoundHandler = server.NotFoundHandler(logger)
