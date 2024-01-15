@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"runtime"
@@ -16,6 +17,7 @@ import (
 var (
 	configSyncOnce sync.Once
 	cfg            *Config
+	appEnvironment string = "PRODUCTION"
 )
 
 // Get returns config concrete object. It's done in singleton and thread-safe.
@@ -30,7 +32,10 @@ func Get() *Config {
 func load() *Config {
 	c := new(Config)
 	c.app()
+	c.openTelemetry()
 	c.logrus()
+	c.jwt()
+	c.basicAuth()
 
 	return c
 }
@@ -38,7 +43,20 @@ func load() *Config {
 func (c *Config) app() {
 	c.App.Name = os.Getenv("APP_NAME")
 	c.App.Port, _ = strconv.Atoi(os.Getenv("APP_PORT"))
+	c.App.Environment = appEnvironment
 	c.App.Location, _ = time.LoadLocation("APP_LOCATION")
+
+	environment := strings.ToUpper(strings.ReplaceAll(os.Getenv("APP_ENVIRONMENT"), " ", ""))
+	if environment != "" {
+		c.App.Environment = environment
+	}
+
+	debug, _ := strconv.ParseBool(os.Getenv("APP_DEBUG"))
+	c.App.Debug = debug
+}
+
+func (cfg *Config) openTelemetry() {
+	cfg.OpenTelemetry.Collector.Endpoint = os.Getenv("OTEL_COLLECTOR_ENDPOINT")
 }
 
 func (c *Config) logrus() {
@@ -58,13 +76,33 @@ func (c *Config) logrus() {
 	}
 }
 
+func (c *Config) jwt() {
+	jwtRsaPlain := os.Getenv("JWT_RSA")
+	var jwtRsa = struct {
+		PrivateKey string `json:"private"`
+		PublicKey  string `json:"public"`
+	}{}
+
+	json.Unmarshal([]byte(jwtRsaPlain), &jwtRsa)
+
+	c.JWT.PrivateKey = []byte(jwtRsa.PrivateKey)
+	c.JWT.PublicKey = []byte(jwtRsa.PublicKey)
+}
+
+func (c *Config) basicAuth() {
+	c.BasicAuth.Username = os.Getenv("BASIC_AUTH_USERNAME")
+	c.BasicAuth.Password = os.Getenv("BASIC_AUTH_PASSWORD")
+}
+
 // Config contains collection of the properties for the application configurations.
 type Config struct {
 	// App is a set of properties for the application such as name, port, location, etc.
 	App struct {
-		Name     string
-		Port     int
-		Location *time.Location
+		Name        string
+		Port        int
+		Environment string
+		Location    *time.Location
+		Debug       bool
 	}
 	// CORS is a set of properties for Cross Origins Resource Sharing. It should be set to allow direct request from the external web application (from browser).
 	CORS struct {
@@ -85,5 +123,11 @@ type Config struct {
 	BasicAuth struct {
 		Username string
 		Password string
+	}
+	// OpenTelemetry contains creds and other properties that will be needs to connect and run agent for application tracing and metrics collection.
+	OpenTelemetry struct {
+		Collector struct {
+			Endpoint string
+		}
 	}
 }

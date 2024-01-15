@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/sangianpatrick/tm-user/pkg/response"
 	"github.com/sirupsen/logrus"
@@ -38,6 +39,7 @@ func IndexHandler(logger *logrus.Logger) http.HandlerFunc {
 			Status:  "OK",
 			Message: "application is running properly",
 		}
+		time.Sleep(time.Millisecond * 5)
 		response.JSON(w, http.StatusOK, resp)
 	})
 }
