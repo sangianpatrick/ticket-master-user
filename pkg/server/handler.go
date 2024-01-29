@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/sangianpatrick/tm-user/pkg/response"
 	"github.com/sirupsen/logrus"
@@ -28,18 +27,17 @@ func NotFoundHandler(logger *logrus.Logger) http.Handler {
 			},
 		}
 
-		response.JSON(w, http.StatusOK, resp)
+		response.JSON(w, http.StatusNotFound, resp)
 	})
 }
 
-func IndexHandler(logger *logrus.Logger) http.HandlerFunc {
+func IndexHandler() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resp := response.WebAPIEnvelope{
 			Success: true,
 			Status:  "OK",
 			Message: "application is running properly",
 		}
-		time.Sleep(time.Millisecond * 5)
 		response.JSON(w, http.StatusOK, resp)
 	})
 }
