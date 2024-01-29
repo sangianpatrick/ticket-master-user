@@ -1,9 +1,9 @@
-name: tm-user-cicd
+name: tm-user-cicd-master
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-deploy:

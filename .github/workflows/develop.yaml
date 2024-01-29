@@ -1,4 +1,4 @@
-name: tm-user-cicd
+name: tm-user-cicd-develop
 
 on:
   push:
