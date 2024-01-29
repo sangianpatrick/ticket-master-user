@@ -1,2 +1,11 @@
 # tm-user
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=coverage)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=bugs)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=patrickproject_tm-user&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=patrickproject_tm-user)
