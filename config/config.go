@@ -36,6 +36,7 @@ func load() *Config {
 	c.logrus()
 	c.jwt()
 	c.basicAuth()
+	c.postgres()
 
 	return c
 }
@@ -94,6 +95,15 @@ func (c *Config) basicAuth() {
 	c.BasicAuth.Password = os.Getenv("BASIC_AUTH_PASSWORD")
 }
 
+func (c *Config) postgres() {
+	c.Postgres.Host = os.Getenv("POSTGRES_HOST")
+	c.Postgres.Port, _ = strconv.Atoi(os.Getenv("POSTGRES_PORT"))
+	c.Postgres.User = os.Getenv("POSTGRES_PORT")
+	c.Postgres.Password = os.Getenv("POSTGRES_PASSWORD")
+	c.Postgres.DBName = os.Getenv("POSTGRES_DBNAME")
+	c.Postgres.SSLMode = os.Getenv("POSTGRES_SSLMODE")
+}
+
 // Config contains collection of the properties for the application configurations.
 type Config struct {
 	// App is a set of properties for the application such as name, port, location, etc.
@@ -129,5 +139,13 @@ type Config struct {
 		Collector struct {
 			Endpoint string
 		}
+	}
+	Postgres struct {
+		Host     string
+		Port     int
+		User     string
+		Password string
+		DBName   string
+		SSLMode  string
 	}
 }

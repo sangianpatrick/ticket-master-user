@@ -3,7 +3,7 @@ package customer
 import "time"
 
 type Customer struct {
-	ID         string     `json:"id"`
+	ID         int64      `json:"id"`
 	Email      string     `json:"email"`
 	Password   string     `json:"password"`
 	Name       string     `json:"name"`

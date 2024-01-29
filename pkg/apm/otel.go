@@ -18,8 +18,11 @@ import (
 var otelImpl *openTelemetryImpl
 var syncOnce sync.Once
 
+// OpenTelemetry is wrapper of OpenTelemetry object. It contains behavior to start and stop the agent from tracing and collecting metrics.
 type OpenTelemetry interface {
+	// Start will start the OpenTelemetry to capture the trace from any request and collecting the metrics.
 	Start(ctx context.Context) (err error)
+	// Stop will stop the OpenTelemetry agent from capturing and collecting the traces/metrics.
 	Stop(ctx context.Context) (err error)
 }
 
@@ -54,6 +57,7 @@ func newOpenTelemetry(serviceName, environment, endpoint string) *openTelemetryI
 	}
 }
 
+// GetOpenTelemetry returns object the implements the OpenTelemetry wrapper. It's done in singleton pattern and thread-safe. The object is instantiated once.
 func GetOpenTelemetry() OpenTelemetry {
 	cfg := config.Get()
 	syncOnce.Do(func() {
@@ -63,7 +67,7 @@ func GetOpenTelemetry() OpenTelemetry {
 	return otelImpl
 }
 
-// Start implements OpenTelemetry.
+// Start will start the OpenTelemetry to capture the trace from any request and collecting the metrics.
 func (ot *openTelemetryImpl) Start(ctx context.Context) (err error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -96,7 +100,7 @@ func (ot *openTelemetryImpl) Start(ctx context.Context) (err error) {
 	return
 }
 
-// Stop implements OpenTelemetry.
+// Stop will stop the OpenTelemetry agent from capturing and collecting the traces/metrics.
 func (ot *openTelemetryImpl) Stop(ctx context.Context) (err error) {
 	if ctx == nil {
 		ctx = context.Background()

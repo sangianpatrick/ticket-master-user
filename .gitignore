@@ -1,0 +1,7 @@
+.env
+/coverage
+/.vscode
+/*.env.json
+/target
+/bin
+app

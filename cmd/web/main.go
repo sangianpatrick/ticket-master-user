@@ -37,7 +37,7 @@ func main() {
 	router.NotFoundHandler = server.NotFoundHandler(logger)
 	router.StrictSlash(true)
 
-	router.HandleFunc("/ticketmaster/user", server.IndexHandler(logger)).Methods(http.MethodGet)
+	router.HandleFunc("/ticketmaster/user", server.IndexHandler()).Methods(http.MethodGet)
 
 	httpServer := server.NewServer(logger, router, cfg.App.Name, cfg.App.Port)
 	httpServer.Start()

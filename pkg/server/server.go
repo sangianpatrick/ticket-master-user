@@ -24,6 +24,7 @@ type server struct {
 	httpServer *http.Server
 }
 
+// NewServer return http server object.
 func NewServer(logger *logrus.Logger, httpHandler http.Handler, name string, port int) Server {
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
