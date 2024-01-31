@@ -62,18 +62,18 @@ func (cfg *Config) openTelemetry() {
 
 func (c *Config) logrus() {
 	c.Logrus.Formatter = &logrus.JSONFormatter{
-		TimestampFormat: time.RFC3339Nano,
-		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyFunc:  "caller",
-			logrus.FieldKeyLevel: "severity",
-			logrus.FieldKeyTime:  "timestamp",
-		},
+		TimestampFormat:   time.RFC3339Nano,
+		DisableTimestamp:  false,
+		DisableHTMLEscape: true,
+		DataKey:           "",
+		FieldMap:          logrus.FieldMap{logrus.FieldKeyFunc: "caller", logrus.FieldKeyLevel: "severity", logrus.FieldKeyTime: "timestamp"},
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			s := strings.Split(f.Function, ".")
 			funcname := s[len(s)-1]
 			filename := fmt.Sprintf("%s:%d", f.File, f.Line)
 			return funcname, filename
 		},
+		PrettyPrint: false,
 	}
 }
 
@@ -98,10 +98,12 @@ func (c *Config) basicAuth() {
 func (c *Config) postgres() {
 	c.Postgres.Host = os.Getenv("POSTGRES_HOST")
 	c.Postgres.Port, _ = strconv.Atoi(os.Getenv("POSTGRES_PORT"))
-	c.Postgres.User = os.Getenv("POSTGRES_PORT")
+	c.Postgres.User = os.Getenv("POSTGRES_USER")
 	c.Postgres.Password = os.Getenv("POSTGRES_PASSWORD")
 	c.Postgres.DBName = os.Getenv("POSTGRES_DBNAME")
 	c.Postgres.SSLMode = os.Getenv("POSTGRES_SSLMODE")
+	c.Postgres.MaxOpenConns, _ = strconv.Atoi(os.Getenv("POSTGRES_MAX_OPEN_CONNS"))
+	c.Postgres.MaxIdleConns, _ = strconv.Atoi(os.Getenv("POSTGRES_MAX_IDLE_CONNS"))
 }
 
 // Config contains collection of the properties for the application configurations.
@@ -141,11 +143,13 @@ type Config struct {
 		}
 	}
 	Postgres struct {
-		Host     string
-		Port     int
-		User     string
-		Password string
-		DBName   string
-		SSLMode  string
+		Host         string
+		Port         int
+		User         string
+		Password     string
+		DBName       string
+		SSLMode      string
+		MaxOpenConns int
+		MaxIdleConns int
 	}
 }

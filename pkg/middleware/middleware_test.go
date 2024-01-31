@@ -91,6 +91,8 @@ func TestNewHTTPRequestLoggerMiddleware(t *testing.T) {
 		logData := LogData{}
 		json.Unmarshal(logDataBuff.Bytes(), &logData)
 
+		t.Log(logDataBuff.String())
+
 		assert.Equal(t, http.MethodPost, logData.Method)
 		assert.Equal(t, "OK", logData.ResponseBody)
 	})

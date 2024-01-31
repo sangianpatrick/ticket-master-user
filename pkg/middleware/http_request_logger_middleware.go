@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -64,26 +65,34 @@ func (hrlm *httpRequestLoggerMiddleware) Middleware(handler http.Handler) http.H
 		wrappedResponseWriter.ResponseWriter.Header().Set("X-Custom-Trace-ID", traceID)
 		wrappedResponseWriter.recorder.Header().Set("X-Custom-Trace-ID", traceID)
 
+		requestHeader := r.Header
+
+		buf, _ := io.ReadAll(r.Body)
+		rcCopied1 := io.NopCloser(bytes.NewBuffer(buf))
+		rcCopied2 := io.NopCloser(bytes.NewBuffer(buf))
+
+		r.Body = rcCopied1
+
 		now := time.Now()
 		handler.ServeHTTP(wrappedResponseWriter, r)
 		elapsed := time.Since(now)
 
-		requestHeader := r.Header
-
-		requestBody := new(bytes.Buffer)
-		io.Copy(requestBody, r.Body)
+		requestBodyData := make(map[string]interface{})
+		json.NewDecoder(rcCopied2).Decode(&requestBodyData)
 
 		result := recoreder.Result()
 
 		defer result.Body.Close()
-		responseBodyBuff, _ := io.ReadAll(result.Body)
+
+		responseBodyData := make(map[string]interface{})
+		json.NewDecoder(result.Body).Decode(&responseBodyData)
 
 		responseHeader := w.Header().Clone()
 
 		captured := logrus.Fields{}
 		captured["http.method"] = r.Method
 		captured["http.url"] = r.RequestURI
-		captured["http.request.body"] = requestBody.String()
+		captured["http.request.body"] = requestBodyData
 		captured["http.status_code"] = result.StatusCode
 		for reqHeaderKey, reqHeaderCol := range requestHeader {
 			captured[fmt.Sprintf("http.request.header.%s", strings.ReplaceAll(strings.ToLower(reqHeaderKey), " ", "_"))] = strings.Join(reqHeaderCol, ",")
@@ -91,10 +100,15 @@ func (hrlm *httpRequestLoggerMiddleware) Middleware(handler http.Handler) http.H
 		for resHeaderKey, resHeaderCol := range responseHeader {
 			captured[fmt.Sprintf("http.response.header.%s", strings.ReplaceAll(strings.ToLower(resHeaderKey), " ", "_"))] = strings.Join(resHeaderCol, ",")
 		}
-		captured["http.response.body"] = string(responseBodyBuff)
+		captured["http.response.body"] = responseBodyData
 		captured["time_consumption"] = elapsed.String()
 		captured["custom_trace_id"] = traceID
 
-		hrlm.logger.WithContext(r.Context()).WithFields(captured).Info()
+		entry := hrlm.logger.WithContext(r.Context()).WithFields(captured)
+		if result.StatusCode < 200 || result.StatusCode > 299 {
+			entry.Error()
+			return
+		}
+		entry.Info()
 	})
 }

@@ -2,14 +2,15 @@ package apperror
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/sangianpatrick/tm-user/pkg/appstatus"
 )
 
 type Error struct {
-	err            error
-	status         appstatus.Status
-	httpStatusCode int
+	Err            error
+	Status         appstatus.Status
+	HTTPStatusCode int
 }
 
 func SetError(err error, status appstatus.Status, httpStatusCode int) *Error {
@@ -22,12 +23,26 @@ func SetError(err error, status appstatus.Status, httpStatusCode int) *Error {
 	}
 
 	return &Error{
-		err:            err,
-		status:         status,
-		httpStatusCode: httpStatusCode,
+		Err:            err,
+		Status:         status,
+		HTTPStatusCode: httpStatusCode,
 	}
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("%d: %s %s", e.httpStatusCode, e.status, e.err.Error())
+	return e.Err.Error()
+}
+
+func Destruct(err error) *Error {
+	e, ok := err.(*Error)
+	if ok {
+		return e
+	}
+
+	e = new(Error)
+	e.Err = err
+	e.Status = appstatus.InternalServerError
+	e.HTTPStatusCode = http.StatusInternalServerError
+
+	return e
 }

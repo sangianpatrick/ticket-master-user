@@ -86,4 +86,4 @@ Add additional notes about how to deploy this on a live system
 
 ### Authors
 
-* **Patrick Maurits Sangian** - *Initial work* - [Gitlab](https://github.com/sangianpatrick)
+* **Patrick Maurits Sangian** - [Github](https://github.com/sangianpatrick)
