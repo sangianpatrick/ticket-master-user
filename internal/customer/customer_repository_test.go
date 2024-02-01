@@ -32,7 +32,7 @@ func TestCustomerRepositorySave(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectPrepare(expectedQuery).
 			ExpectQuery().
-			WithArgs(newCustomer.Email, newCustomer.Password, newCustomer.Name, newCustomer.IsVerified, newCustomer.CreatedAt).
+			WithArgs(newCustomer.Email, newCustomer.Password, newCustomer.PasswordSalt, newCustomer.Name, newCustomer.IsVerified, newCustomer.CreatedAt).
 			WillReturnRows(sqlmock.NewRows([]string{"1"}).AddRow(int64(1)))
 		mock.ExpectCommit()
 
@@ -52,7 +52,7 @@ func TestCustomerRepositorySave(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectPrepare(expectedQuery).
 			ExpectQuery().
-			WithArgs(newCustomer.Email, newCustomer.Password, newCustomer.Name, newCustomer.IsVerified, newCustomer.CreatedAt).
+			WithArgs(newCustomer.Email, newCustomer.Password, newCustomer.PasswordSalt, newCustomer.Name, newCustomer.IsVerified, newCustomer.CreatedAt).
 			WillReturnError(sql.ErrConnDone)
 		mock.ExpectRollback()
 
@@ -103,7 +103,7 @@ func TestCustomerRepositoryUpdate(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectPrepare(expectedQuery).
 			ExpectExec().
-			WithArgs(c.Email, c.Password, c.Name, c.IsVerified, c.IsDeleted, c.UpdatedAt, c.ID).
+			WithArgs(c.Email, c.Password, c.PasswordSalt, c.Name, c.IsVerified, c.IsDeleted, c.UpdatedAt, c.ID).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 		mock.ExpectCommit()
 
@@ -123,7 +123,7 @@ func TestCustomerRepositoryUpdate(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectPrepare(expectedQuery).
 			ExpectExec().
-			WithArgs(c.Email, c.Password, c.Name, c.IsVerified, c.IsDeleted, c.UpdatedAt, c.ID).
+			WithArgs(c.Email, c.Password, c.PasswordSalt, c.Name, c.IsVerified, c.IsDeleted, c.UpdatedAt, c.ID).
 			WillReturnError(sql.ErrConnDone)
 		mock.ExpectRollback()
 

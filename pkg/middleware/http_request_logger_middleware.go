@@ -77,15 +77,18 @@ func (hrlm *httpRequestLoggerMiddleware) Middleware(handler http.Handler) http.H
 		handler.ServeHTTP(wrappedResponseWriter, r)
 		elapsed := time.Since(now)
 
-		requestBodyData := make(map[string]interface{})
-		json.NewDecoder(rcCopied2).Decode(&requestBodyData)
+		// requestBodyData := make(map[string]interface{})
+		// json.NewDecoder(rcCopied2).Decode(&requestBodyData)
+		var requestBodyData interface{}
+		bindData(rcCopied2, &requestBodyData)
 
 		result := recoreder.Result()
 
 		defer result.Body.Close()
 
-		responseBodyData := make(map[string]interface{})
-		json.NewDecoder(result.Body).Decode(&responseBodyData)
+		var responseBodyData interface{}
+		// json.NewDecoder(result.Body).Decode(&responseBodyData)
+		bindData(result.Body, &responseBodyData)
 
 		responseHeader := w.Header().Clone()
 
@@ -111,4 +114,12 @@ func (hrlm *httpRequestLoggerMiddleware) Middleware(handler http.Handler) http.H
 		}
 		entry.Info()
 	})
+}
+
+func bindData(r io.Reader, to any) {
+	if to == nil {
+		return
+	}
+
+	json.NewDecoder(r).Decode(to)
 }

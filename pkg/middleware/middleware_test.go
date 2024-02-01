@@ -8,7 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/sangianpatrick/tm-user/pkg/appstatus"
 	"github.com/sangianpatrick/tm-user/pkg/middleware"
+	"github.com/sangianpatrick/tm-user/pkg/response"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,9 +20,9 @@ type User struct {
 }
 
 type LogData struct {
-	Method       string          `json:"http.method"`
-	RequestBody  json.RawMessage `json:"http.request.body"`
-	ResponseBody string          `json:"http.response.body"`
+	Method       string                  `json:"http.method"`
+	RequestBody  json.RawMessage         `json:"http.request.body"`
+	ResponseBody response.WebAPIEnvelope `json:"http.response.body"`
 }
 
 func TestNewHTTPRequestLoggerMiddleware(t *testing.T) {
@@ -80,8 +82,13 @@ func TestNewHTTPRequestLoggerMiddleware(t *testing.T) {
 		recorder := httptest.NewRecorder()
 
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			respData := response.WebAPIEnvelope{
+				Success: true,
+				Status:  appstatus.OK,
+				Message: "success",
+			}
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, "OK")
+			json.NewEncoder(w).Encode(respData)
 		})
 
 		middleware.NewHTTPRequestLoggerMiddleware(logger, true).Middleware(handler).ServeHTTP(recorder, r)
@@ -94,6 +101,6 @@ func TestNewHTTPRequestLoggerMiddleware(t *testing.T) {
 		t.Log(logDataBuff.String())
 
 		assert.Equal(t, http.MethodPost, logData.Method)
-		assert.Equal(t, "OK", logData.ResponseBody)
+		assert.Equal(t, "success", logData.ResponseBody.Message)
 	})
 }

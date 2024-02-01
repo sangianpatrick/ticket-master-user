@@ -41,10 +41,5 @@ func buildConnection() *sql.DB {
 	conn.SetMaxOpenConns(cfg.Postgres.MaxOpenConns)
 	conn.SetMaxIdleConns(cfg.Postgres.MaxIdleConns)
 
-	if err := conn.Ping(); err != nil {
-		log.Println(err)
-		return nil
-	}
-
 	return conn
 }

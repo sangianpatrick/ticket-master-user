@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/sangianpatrick/tm-user/pkg/appstatus"
 	"github.com/sangianpatrick/tm-user/pkg/response"
 	"github.com/sangianpatrick/tm-user/pkg/server"
 	"github.com/sirupsen/logrus"
@@ -30,7 +31,7 @@ func TestNotFoundHandler(t *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, rr.Result().StatusCode, "http response status code should be 404 Not Found")
 		assert.False(t, respBody.Success, "response body on field `success` should be FALSE")
-		assert.Equal(t, respBody.Status, "NotFound", "response body on field `status` should be \"NotFound\"")
+		assert.Equal(t, respBody.Status, appstatus.NotFound, "response body on field `status` should be \"NotFound\"")
 	})
 }
 
@@ -52,6 +53,6 @@ func TestIndexHandler(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, rr.Result().StatusCode, "http response status code should be 200 OK")
 		assert.True(t, respBody.Success, "response body on field `success` should be TRUE")
-		assert.Equal(t, respBody.Status, "OK", "response body on field `status` should be \"OK\"")
+		assert.Equal(t, respBody.Status, appstatus.OK, "response body on field `status` should be \"OK\"")
 	})
 }

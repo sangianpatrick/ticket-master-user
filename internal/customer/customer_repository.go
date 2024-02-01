@@ -12,6 +12,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	errCustomerNotFound = fmt.Errorf("customer not found")
+)
+
 // CustomerRepository contains bevahior of customer repository such as creation, data retrieval and modification.
 type CustomerRepository interface {
 	Save(ctx context.Context, c Customer, tx *sql.Tx) (ID int64, err error)
@@ -104,7 +108,7 @@ func (cr *customerRepositoryImpl) FindByEmail(ctx context.Context, email string,
 	dataLength := len(bunchOfCustomer)
 
 	if dataLength < 1 {
-		err = apperror.SetError(fmt.Errorf("customer is not found"), appstatus.NotFound, http.StatusNotFound)
+		err = apperror.SetError(errCustomerNotFound, appstatus.NotFound, http.StatusNotFound)
 		return
 	}
 
@@ -132,7 +136,7 @@ func (cr *customerRepositoryImpl) FindByID(ctx context.Context, ID int64, tx *sq
 	dataLength := len(bunchOfCustomer)
 
 	if dataLength < 1 {
-		err = apperror.SetError(fmt.Errorf("customer is not found"), appstatus.NotFound, http.StatusNotFound)
+		err = apperror.SetError(errCustomerNotFound, appstatus.NotFound, http.StatusNotFound)
 		return
 	}
 
@@ -160,7 +164,7 @@ func (cr *customerRepositoryImpl) FindByIDForUpdate(ctx context.Context, ID int6
 	dataLength := len(bunchOfCustomer)
 
 	if dataLength < 1 {
-		err = apperror.SetError(fmt.Errorf("customer is not found"), appstatus.NotFound, http.StatusNotFound)
+		err = apperror.SetError(errCustomerNotFound, appstatus.NotFound, http.StatusNotFound)
 		return
 	}
 
@@ -215,7 +219,7 @@ func (cr *customerRepositoryImpl) Update(ctx context.Context, ID int64, c Custom
 
 	defer stmt.Close()
 
-	if _, err = stmt.ExecContext(ctx, c.Email, c.Password, c.Name, c.IsVerified, c.IsDeleted, c.UpdatedAt, ID); err != nil {
+	if _, err = stmt.ExecContext(ctx, c.Email, c.Password, c.PasswordSalt, c.Name, c.IsVerified, c.IsDeleted, c.UpdatedAt, ID); err != nil {
 		cr.logger.WithContext(ctx).WithField("query", query).WithError(err).Error()
 		err = apperror.SetError(err, appstatus.InternalServerError, http.StatusInternalServerError)
 		return
